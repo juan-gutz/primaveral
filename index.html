@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Salimos un rato? · Plan primavera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#EEF4E4;
+    --papel-2:#F8FBF0;
+    --tinta:#1F2C18;
+    --tinta-suave:#4E5F44;
+    --amarillo:#F2BE1A;
+    --amarillo-claro:#FFE27A;
+    --hoja:#3F6B38;
+    --hoja-clara:#BFD8A8;
+    --borde:#C9DAB3;
+    --sombra:rgba(31,44,24,.12);
+    --radio:18px;
+    --paso:clamp(1rem,3.5vw,1.6rem);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#131C0F;
+      --papel-2:#1B2615;
+      --tinta:#EDF3E3;
+      --tinta-suave:#B3C6A4;
+      --amarillo:#FFD24A;
+      --amarillo-claro:#F5C74B;
+      --hoja:#9CC186;
+      --hoja-clara:#2E4326;
+      --borde:#2F4326;
+      --sombra:rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#131C0F; --papel-2:#1B2615; --tinta:#EDF3E3; --tinta-suave:#B3C6A4;
+    --amarillo:#FFD24A; --amarillo-claro:#F5C74B; --hoja:#9CC186; --hoja-clara:#2E4326;
+    --borde:#2F4326; --sombra:rgba(0,0,0,.45);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:"Karla","Segoe UI",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.55;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .prado{
+    position:fixed;inset:auto 0 0 0;height:22vh;min-height:110px;
+    pointer-events:none;opacity:.5;z-index:0;
+  }
+  .prado svg{width:100%;height:100%;display:block}
+
+  .hoja-papel{
+    position:relative;z-index:1;
+    width:min(680px,100%);
+    margin:0 auto;
+    padding:var(--paso) var(--paso) 26vh;
+  }
+
+  h1,h2{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-variation-settings:"SOFT" 100,"WONK" 1;
+    line-height:1.08;
+    letter-spacing:-.01em;
+    margin:0 0 .5rem;
+  }
+  h1{font-size:clamp(2.1rem,8vw,3.2rem)}
+  h2{font-size:clamp(1.5rem,5.5vw,2.1rem)}
+  p{margin:0 0 1rem;max-width:56ch}
+  .susurro{color:var(--tinta-suave);font-size:.95rem}
+
+  /* ---------- tallo de progreso ---------- */
+  .tallo{
+    display:flex;align-items:center;gap:0;
+    margin:.4rem 0 1.4rem;height:34px;
+  }
+  .tallo .brote{position:relative;width:20px;height:20px;flex:0 0 auto}
+  .tallo .rama{flex:1 1 auto;height:3px;background:var(--hoja-clara);border-radius:2px}
+  .brote svg{width:100%;height:100%;display:block;transform:scale(.55);transform-origin:center;
+    transition:transform .45s cubic-bezier(.2,1.5,.4,1)}
+  .brote.abierto svg{transform:scale(1.15)}
+  .brote .petalos{fill:var(--hoja-clara);transition:fill .4s}
+  .brote.abierto .petalos{fill:var(--amarillo)}
+  .brote .centro{fill:var(--papel-2)}
+  .brote.abierto .centro{fill:var(--hoja)}
+
+  /* ---------- pantallas ---------- */
+  .pantalla{display:none}
+  .pantalla.activa{display:block;animation:entra .5s ease both}
+  @keyframes entra{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .ramo{width:min(240px,62vw);margin:0 auto .6rem;display:block}
+  .ramo .flor{transform-box:fill-box;transform-origin:bottom center;animation:crece .9s cubic-bezier(.2,1.3,.3,1) both}
+  .ramo .flor:nth-child(2){animation-delay:.12s}
+  .ramo .flor:nth-child(3){animation-delay:.24s}
+  .ramo .flor:nth-child(4){animation-delay:.36s}
+  .ramo .flor:nth-child(5){animation-delay:.48s}
+  @keyframes crece{from{transform:scale(.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+
+  /* ---------- opciones ---------- */
+  .subtitulo{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.15rem;
+    margin:.2rem 0 -.2rem;color:var(--tinta);
+  }
+  .opciones{display:grid;gap:.6rem;margin:1rem 0 1.2rem}
+  @media(min-width:520px){.opciones{grid-template-columns:1fr 1fr}}
+  .opcion{
+    display:flex;align-items:center;gap:.65rem;
+    text-align:left;width:100%;
+    font:inherit;color:inherit;
+    background:var(--papel-2);
+    border:1.5px solid var(--borde);
+    border-radius:var(--radio);
+    padding:.8rem .9rem;cursor:pointer;
+    transition:border-color .2s,background .2s,transform .12s;
+  }
+  .opcion:hover{border-color:var(--hoja)}
+  .opcion:active{transform:scale(.98)}
+  .opcion .marca{
+    width:22px;height:22px;flex:0 0 auto;border-radius:50%;
+    border:1.5px solid var(--borde);background:transparent;
+    display:grid;place-items:center;
+  }
+  .opcion[aria-pressed="true"]{border-color:var(--hoja);background:var(--amarillo-claro);color:#1F2C18}
+  .opcion[aria-pressed="true"] .marca{background:var(--amarillo);border-color:var(--hoja)}
+  .opcion .emoji{font-size:1.15rem;line-height:1}
+
+  /* ---------- botones ---------- */
+  .fila{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;margin-top:.4rem}
+  button{font:inherit}
+  .boton{
+    font-family:"Karla",sans-serif;font-weight:700;
+    background:var(--amarillo);color:#241D00;
+    border:none;border-radius:999px;
+    padding:.8rem 1.5rem;cursor:pointer;
+    box-shadow:0 3px 0 var(--hoja);
+    transition:transform .12s,box-shadow .12s;
+  }
+  .boton:hover{transform:translateY(-1px);box-shadow:0 4px 0 var(--hoja)}
+  .boton:active{transform:translateY(2px);box-shadow:0 1px 0 var(--hoja)}
+  .boton.secundario{
+    background:transparent;color:var(--tinta-suave);
+    box-shadow:none;border:1.5px solid var(--borde);font-weight:500;
+  }
+  .boton.chico{padding:.55rem 1.05rem;font-size:.92rem}
+  #btnDuda{position:relative;transition:transform .25s ease,opacity .25s}
+  :focus-visible{outline:3px solid var(--hoja);outline-offset:3px;border-radius:6px}
+
+  /* ---------- campos ---------- */
+  .campos{display:grid;gap:.8rem;margin:1rem 0 1.2rem}
+  @media(min-width:520px){.campos{grid-template-columns:1fr 1fr}}
+  label{display:block;font-size:.9rem;color:var(--tinta-suave);margin-bottom:.25rem}
+  input[type=date],input[type=time]{
+    width:100%;font:inherit;color:inherit;
+    background:var(--papel-2);
+    border:1.5px solid var(--borde);border-radius:12px;
+    padding:.7rem .8rem;
+  }
+  .aviso{color:#A4442B;font-size:.92rem;margin:.2rem 0 0;min-height:1.2em}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aviso{color:#FFAE94}}
+
+  /* ---------- resumen ---------- */
+  .resumen{
+    background:var(--papel-2);border:1.5px dashed var(--borde);
+    border-radius:var(--radio);padding:1rem 1.1rem;margin:1rem 0 1.2rem;
+  }
+  .resumen dl{display:grid;grid-template-columns:auto 1fr;gap:.45rem .9rem;margin:0}
+  .resumen dt{color:var(--tinta-suave);font-size:.9rem;white-space:nowrap}
+  .resumen dd{margin:0;font-weight:500}
+  .nota-amistad{
+    display:inline-block;font-size:.85rem;color:var(--tinta-suave);
+    border:1px solid var(--borde);border-radius:999px;padding:.25rem .7rem;margin-bottom:1rem;
+  }
+
+  /* ---------- lluvia de flores ---------- */
+  .cae{position:fixed;top:-12vh;z-index:5;pointer-events:none;width:34px;height:34px}
+  .cae svg{width:100%;height:100%}
+  @keyframes caer{
+    0%{transform:translateY(-10vh) rotate(0deg);opacity:0}
+    10%{opacity:1}
+    100%{transform:translateY(112vh) rotate(420deg);opacity:.9}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+    .cae{display:none}
+  }
+  .copiado{font-size:.9rem;color:var(--hoja);min-height:1.2em;margin-top:.4rem}
+</style>
+</head>
+<body>
+
+<div class="prado" aria-hidden="true">
+  <svg viewBox="0 0 400 120" preserveAspectRatio="none">
+    <path d="M0 120 L0 74 Q60 58 120 72 Q190 88 260 66 Q330 46 400 68 L400 120 Z" fill="var(--hoja-clara)"/>
+    <g stroke="var(--hoja)" stroke-width="1.6" fill="none">
+      <path d="M30 118 Q28 96 34 82"/><path d="M96 118 Q100 98 94 84"/>
+      <path d="M168 118 Q164 100 170 88"/><path d="M242 118 Q246 96 240 80"/>
+      <path d="M318 118 Q314 98 320 84"/><path d="M374 118 Q378 100 372 88"/>
+    </g>
+    <g fill="var(--amarillo)">
+      <circle cx="34" cy="79" r="5.5"/><circle cx="94" cy="81" r="5"/><circle cx="170" cy="85" r="4.6"/>
+      <circle cx="240" cy="77" r="5.4"/><circle cx="320" cy="81" r="5"/><circle cx="372" cy="85" r="4.6"/>
+    </g>
+  </svg>
+</div>
+
+<main class="hoja-papel">
+
+  <div class="tallo" id="tallo" aria-hidden="true"></div>
+
+  <!-- PASO 0 · portada -->
+  <section class="pantalla activa" id="p0">
+    <svg class="ramo" viewBox="0 0 220 180" role="img" aria-label="Ramo de flores amarillas">
+      <g stroke="var(--hoja)" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M110 178 Q108 120 60 58"/><path d="M110 178 Q112 118 160 60"/>
+        <path d="M110 178 Q104 110 108 40"/><path d="M110 178 Q118 130 36 108"/>
+        <path d="M110 178 Q102 132 184 106"/>
+      </g>
+      <g class="flor"><g transform="translate(60,52)"><g fill="var(--amarillo)"><ellipse cx="0" cy="-16" rx="8" ry="15"/><ellipse cx="15" cy="-5" rx="15" ry="8"/><ellipse cx="0" cy="16" rx="8" ry="15"/><ellipse cx="-15" cy="-5" rx="15" ry="8"/><ellipse cx="11" cy="11" rx="12" ry="9" transform="rotate(45)"/><ellipse cx="-11" cy="11" rx="12" ry="9" transform="rotate(-45)"/></g><circle r="7" fill="var(--hoja)"/></g></g>
+      <g class="flor"><g transform="translate(160,54)"><g fill="var(--amarillo-claro)"><ellipse cx="0" cy="-15" rx="7.5" ry="14"/><ellipse cx="14" cy="-4" rx="14" ry="7.5"/><ellipse cx="0" cy="15" rx="7.5" ry="14"/><ellipse cx="-14" cy="-4" rx="14" ry="7.5"/></g><circle r="6.5" fill="var(--hoja)"/></g></g>
+      <g class="flor"><g transform="translate(108,32)"><g fill="var(--amarillo)"><ellipse cx="0" cy="-18" rx="8.5" ry="16"/><ellipse cx="17" cy="-5" rx="16" ry="8.5"/><ellipse cx="0" cy="18" rx="8.5" ry="16"/><ellipse cx="-17" cy="-5" rx="16" ry="8.5"/><ellipse cx="12" cy="12" rx="13" ry="9.5" transform="rotate(45)"/><ellipse cx="-12" cy="12" rx="13" ry="9.5" transform="rotate(-45)"/></g><circle r="7.5" fill="var(--hoja)"/></g></g>
+      <g class="flor"><g transform="translate(34,106)"><g fill="var(--amarillo-claro)"><ellipse cx="0" cy="-12" rx="6" ry="11"/><ellipse cx="11" cy="-3" rx="11" ry="6"/><ellipse cx="0" cy="12" rx="6" ry="11"/><ellipse cx="-11" cy="-3" rx="11" ry="6"/></g><circle r="5" fill="var(--hoja)"/></g></g>
+      <g class="flor"><g transform="translate(186,104)"><g fill="var(--amarillo)"><ellipse cx="0" cy="-12" rx="6" ry="11"/><ellipse cx="11" cy="-3" rx="11" ry="6"/><ellipse cx="0" cy="12" rx="6" ry="11"/><ellipse cx="-11" cy="-3" rx="11" ry="6"/></g><circle r="5" fill="var(--hoja)"/></g></g>
+    </svg>
+    <h1 id="saludo">Hola</h1>
+    <p>Pronto llega la primavera y con ella una idea bastante simple: salir un rato, hablar de cualquier cosa y comer algo rico.</p>
+    <p class="susurro">Son seis preguntas cortas.</p>
+    <div class="fila"><button class="boton" data-ir="1">Abrir el ramo</button></div>
+  </section>
+
+  <!-- PASO 1 · la propuesta -->
+  <section class="pantalla" id="p1">
+    <span class="nota-amistad">Plan de amistad</span>
+    <h2>¿Salimos un rato?</h2>
+    <p>Dos amigos y un plan de primavera.</p>
+    <div class="fila">
+      <button class="boton" data-ir="2">Dale, salgamos</button>
+      <button class="boton secundario" id="btnDuda">Mmm, déjame pensarlo</button>
+    </div>
+    <p class="aviso" id="avisoDuda" aria-live="polite"></p>
+  </section>
+
+  <!-- PASO 1b · respuesta amable -->
+  <section class="pantalla" id="pquiza">
+    <h2>Todo bien, en serio</h2>
+    <p>Pensarlo también es una respuesta. La invitación queda abierta y la primavera dura tres meses, así que no hay apuro.</p>
+    <div class="fila">
+      <button class="boton" data-ir="2">Cambié de idea, vamos</button>
+      <button class="boton secundario" data-ir="0">Volver al principio</button>
+    </div>
+  </section>
+
+  <!-- PASO 2 · cuándo -->
+  <section class="pantalla" id="p2">
+    <h2>¿Qué día te queda cómodo?</h2>
+    <p>Este fin de semana. Elegí vos, yo me acomodo al horario.</p>
+    <div class="opciones" data-grupo="dia">
+      <button class="opcion" aria-pressed="false" data-valor="Este sábado"><span class="marca"></span><span class="emoji">🌞</span>Este sábado</button>
+      <button class="opcion" aria-pressed="false" data-valor="Este domingo"><span class="marca"></span><span class="emoji">🌻</span>Este domingo</button>
+    </div>
+    <p class="aviso" id="avisoDia" aria-live="polite"></p>
+    <div class="fila">
+      <button class="boton" data-validar="dia">Seguir</button>
+      <button class="boton secundario chico" data-ir="1">Atrás</button>
+    </div>
+  </section>
+
+  <!-- PASO 3 · el plan -->
+  <section class="pantalla" id="p3">
+    <h2>¿Qué hacemos?</h2>
+    <div class="opciones" data-grupo="plan">
+      <button class="opcion" aria-pressed="false" data-valor="Cine"><span class="marca"></span><span class="emoji">🎬</span>Ir al cine</button>
+      <button class="opcion" aria-pressed="false" data-valor="Caminar por el parque"><span class="marca"></span><span class="emoji">🌼</span>Caminar por el parque</button>
+      <button class="opcion" aria-pressed="false" data-valor="Cafetería"><span class="marca"></span><span class="emoji">☕</span>Cafetería</button>
+      <button class="opcion" aria-pressed="false" data-valor="Restobar"><span class="marca"></span><span class="emoji">🌮</span>Restobar</button>
+    </div>
+
+    <div id="bloquePeli" hidden>
+      <h3 class="subtitulo">¿Cuál vemos?</h3>
+      <div class="opciones" data-grupo="pelicula">
+        <button class="opcion" aria-pressed="false" data-valor="Resident Evil: Noche Cero"><span class="marca"></span><span class="emoji">🧟</span>Resident Evil: Noche Cero</button>
+        <button class="opcion" aria-pressed="false" data-valor="Hechizo de amor: La magia continúa"><span class="marca"></span><span class="emoji">✨</span>Hechizo de amor: La magia continúa</button>
+        <button class="opcion" aria-pressed="false" data-valor="Pepita: La pistolera"><span class="marca"></span><span class="emoji">🤠</span>Pepita: La pistolera</button>
+      </div>
+    </div>
+
+    <p class="aviso" id="avisoPlan" aria-live="polite"></p>
+    <div class="fila">
+      <button class="boton" data-validar="plan">Seguir</button>
+      <button class="boton secundario chico" data-ir="2">Atrás</button>
+    </div>
+  </section>
+
+  <!-- PASO 4 · comida -->
+  <section class="pantalla" id="p4">
+    <h2>¿Y para comer?</h2>
+    <div class="opciones" data-grupo="comida">
+      <button class="opcion" aria-pressed="false" data-valor="Café con medialunas"><span class="marca"></span><span class="emoji">🥐</span>Café con medialunas</button>
+      <button class="opcion" aria-pressed="false" data-valor="Empanadas"><span class="marca"></span><span class="emoji">🥟</span>Empanadas</button>
+      <button class="opcion" aria-pressed="false" data-valor="Helado"><span class="marca"></span><span class="emoji">🍦</span>Helado</button>
+      <button class="opcion" aria-pressed="false" data-valor="Algo dulce de panadería"><span class="marca"></span><span class="emoji">🍋</span>Algo dulce de panadería</button>
+    </div>
+    <p class="aviso" id="avisoComida" aria-live="polite"></p>
+    <div class="fila">
+      <button class="boton" data-validar="comida">Seguir</button>
+      <button class="boton secundario chico" data-ir="3">Atrás</button>
+    </div>
+  </section>
+
+  <!-- PASO 5 · después -->
+  <section class="pantalla" id="p5">
+    <h2>¿Y después?</h2>
+    <div class="opciones" data-grupo="despues">
+      <button class="opcion" aria-pressed="false" data-valor="Charlar hasta que oscurezca"><span class="marca"></span><span class="emoji">🌙</span>Charlar hasta la hora de irnos</button>
+      <button class="opcion" aria-pressed="false" data-valor="Poner música y seguir caminando"><span class="marca"></span><span class="emoji">🎧</span>Música y seguir caminando </button>
+      <button class="opcion" aria-pressed="false" data-valor="Practicar pasos de baile"><span class="marca"></span><span class="emoji">💃🕺</span>Practicar pasos de baile </button>
+      <button class="opcion" aria-pressed="false" data-valor="Nada planeado, improvisamos"><span class="marca"></span><span class="emoji">🎲</span>Nada planeado</button>
+    </div>
+    <p class="aviso" id="avisoDespues" aria-live="polite"></p>
+    <div class="fila">
+      <button class="boton" data-validar="despues">Ver el plan</button>
+      <button class="boton secundario chico" data-ir="4">Atrás</button>
+    </div>
+  </section>
+
+  <!-- PASO 6 · resumen -->
+  <section class="pantalla" id="p6">
+    <h2>Quedó así</h2>
+    <div class="resumen">
+      <dl>
+        <dt>Día</dt><dd id="rDia">—</dd>
+        <dt>Plan</dt><dd id="rPlan">—</dd>
+        <dt class="filaPeli" id="rPeliDt">Película</dt><dd class="filaPeli" id="rPelicula">—</dd>
+        <dt>Comida</dt><dd id="rComida">—</dd>
+        <dt>Después</dt><dd id="rDespues">—</dd>
+      </dl>
+    </div>
+    <p class="susurro">Si algo no te cierra, cambialo. Para eso está el botón de atrás.</p>
+    <div class="fila">
+      <button class="boton" id="btnConfirmar">Confirmar el plan</button>
+      <button class="boton secundario chico" data-ir="5">Atrás</button>
+    </div>
+  </section>
+
+  <!-- PASO 7 · final -->
+  <section class="pantalla" id="p7">
+    <h1>Perfecto. Y lo siento por ser tan friki.</h1>
+    <p id="cierre">Te veo el finde.</p>
+    <div class="resumen"><dl>
+      <dt>Día</dt><dd id="fDia">—</dd>
+      <dt>Plan</dt><dd id="fPlan">—</dd>
+      <dt class="filaPeli" id="fPeliDt">Película</dt><dd class="filaPeli" id="fPelicula">—</dd>
+      <dt>Comida</dt><dd id="fComida">—</dd>
+      <dt>Después</dt><dd id="fDespues">—</dd>
+    </dl></div>
+    <div class="fila">
+      <button class="boton" id="btnCopiar">Copiar el plan</button>
+      <button class="boton secundario chico" id="btnOtraVez">Empezar de nuevo</button>
+    </div>
+    <p class="copiado" id="msgEnvio" aria-live="polite"></p>
+    <p class="copiado" id="msgCopiado" aria-live="polite"></p>
+  </section>
+
+</main>
+
+<script>
+/* ==========================================================
+   PERSONALIZAR AQUÍ
+   También funciona por URL:  ...?para=Ana&de=Juan
+   ========================================================== */
+const CONFIG = {
+  amiga: "Belu",            // nombre de tu amiga
+  yo:    "Inti",            // cómo firmás
+  web3formsKey: "PEGA_AQUI_TU_ACCESS_KEY"  // conseguila gratis en https://web3forms.com
+};
+
+const params = new URLSearchParams(location.search);
+if (params.get("para")) CONFIG.amiga = params.get("para");
+if (params.get("de"))   CONFIG.yo    = params.get("de");
+
+document.getElementById("saludo").textContent = "Hola, " + CONFIG.amiga;
+document.getElementById("cierre").textContent =
+  "Gracias por decir sí, " + CONFIG.amiga + ". Te aviso el día anterior para confirmar. — " + CONFIG.yo;
+
+/* ---------- navegación ---------- */
+const TOTAL = 6; // pasos con flor en el tallo
+const respuestas = { dia:"", plan:"", pelicula:"", comida:"", despues:"" };
+let pasoActual = 0;
+
+const tallo = document.getElementById("tallo");
+const florSVG = '<svg viewBox="-12 -12 24 24"><g class="petalos"><ellipse cx="0" cy="-6.5" rx="3.4" ry="6"/><ellipse cx="6.5" cy="0" rx="6" ry="3.4"/><ellipse cx="0" cy="6.5" rx="3.4" ry="6"/><ellipse cx="-6.5" cy="0" rx="6" ry="3.4"/></g><circle class="centro" r="2.6"/></svg>';
+for (let i = 1; i <= TOTAL; i++) {
+  const b = document.createElement("span");
+  b.className = "brote"; b.dataset.paso = i; b.innerHTML = florSVG;
+  tallo.appendChild(b);
+  if (i < TOTAL) { const r = document.createElement("span"); r.className = "rama"; tallo.appendChild(r); }
+}
+
+function ir(n){
+  document.querySelectorAll(".pantalla").forEach(s => s.classList.remove("activa"));
+  const destino = document.getElementById(typeof n === "string" && isNaN(n) ? n : "p" + n);
+  destino.classList.add("activa");
+  if (!isNaN(n)) {
+    pasoActual = Number(n);
+    document.querySelectorAll(".brote").forEach(b =>
+      b.classList.toggle("abierto", Number(b.dataset.paso) <= pasoActual));
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll("[data-ir]").forEach(b =>
+  b.addEventListener("click", () => ir(b.dataset.ir)));
+
+/* ---------- opciones ---------- */
+document.querySelectorAll(".opciones").forEach(grupo => {
+  grupo.addEventListener("click", e => {
+    const op = e.target.closest(".opcion");
+    if (!op) return;
+    grupo.querySelectorAll(".opcion").forEach(o => o.setAttribute("aria-pressed", "false"));
+    op.setAttribute("aria-pressed", "true");
+    respuestas[grupo.dataset.grupo] = op.dataset.valor;
+    const aviso = document.getElementById("aviso" + grupo.dataset.grupo.charAt(0).toUpperCase() + grupo.dataset.grupo.slice(1));
+    if (aviso) aviso.textContent = "";
+    if (grupo.dataset.grupo === "plan") mostrarPelis(respuestas.plan === "Cine");
+  });
+});
+
+const bloquePeli = document.getElementById("bloquePeli");
+function mostrarPelis(ver){
+  bloquePeli.hidden = !ver;
+  if (!ver) {
+    respuestas.pelicula = "";
+    bloquePeli.querySelectorAll(".opcion").forEach(o => o.setAttribute("aria-pressed", "false"));
+  }
+}
+
+/* ---------- validaciones ---------- */
+const siguiente = { dia:3, plan:4, comida:5, despues:6 };
+const faltante = {
+  dia:     "Elegí sábado o domingo para seguir.",
+  plan:    "Elegí un plan para seguir.",
+  comida:  "Falta elegir algo para comer.",
+  despues: "Elegí qué hacemos después."
+};
+
+document.querySelectorAll("[data-validar]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const campo = btn.dataset.validar;
+    const aviso = document.getElementById("aviso" + campo.charAt(0).toUpperCase() + campo.slice(1));
+    if (!respuestas[campo]) { aviso.textContent = faltante[campo]; return; }
+    if (campo === "plan" && respuestas.plan === "Cine" && !respuestas.pelicula) {
+      aviso.textContent = "Elegí qué película vemos."; return;
+    }
+    aviso.textContent = "";
+    if (campo === "despues") pintarResumen();
+    ir(siguiente[campo]);
+  });
+});
+
+/* ---------- botón "déjame pensarlo" que se hace a un lado ---------- */
+const btnDuda = document.getElementById("btnDuda");
+const avisoDuda = document.getElementById("avisoDuda");
+const excusas = [
+  "Las flores ya están compradas, ojo.",
+  "Última esquiva y te dejo en paz, prometido."
+];
+let esquivos = 0;
+btnDuda.addEventListener("click", () => {
+  if (esquivos >= 2) { avisoDuda.textContent = ""; ir("pquiza"); return; }
+  const x = (Math.random() * 90 - 45).toFixed(0);
+  const y = (Math.random() * 40 - 20).toFixed(0);
+  btnDuda.style.transform = `translate(${x}px, ${y}px) scale(${1 - esquivos * .12})`;
+  avisoDuda.textContent = excusas[esquivos];
+  esquivos++;
+});
+
+/* ---------- resumen ---------- */
+function pintarResumen(){
+  const hayPeli = respuestas.plan === "Cine" && respuestas.pelicula;
+  const datos = {
+    Dia:      respuestas.dia || "—",
+    Plan:     respuestas.plan || "—",
+    Pelicula: respuestas.pelicula || "—",
+    Comida:   respuestas.comida || "—",
+    Despues:  respuestas.despues || "—"
+  };
+  for (const k in datos){
+    document.getElementById("r" + k).textContent = datos[k];
+    document.getElementById("f" + k).textContent = datos[k];
+  }
+  document.querySelectorAll(".filaPeli").forEach(el => el.style.display = hayPeli ? "" : "none");
+}
+
+/* ---------- confirmación + lluvia de flores ---------- */
+const florCaida = '<svg viewBox="-12 -12 24 24"><g fill="var(--amarillo)"><ellipse cx="0" cy="-6.5" rx="3.4" ry="6"/><ellipse cx="6.5" cy="0" rx="6" ry="3.4"/><ellipse cx="0" cy="6.5" rx="3.4" ry="6"/><ellipse cx="-6.5" cy="0" rx="6" ry="3.4"/></g><circle r="2.6" fill="var(--hoja)"/></svg>';
+function lluviaDeFlores(cantidad = 26){
+  for (let i = 0; i < cantidad; i++){
+    const f = document.createElement("div");
+    f.className = "cae";
+    f.innerHTML = florCaida;
+    f.style.left = Math.random() * 96 + "vw";
+    const dur = 3.6 + Math.random() * 3;
+    f.style.animation = `caer ${dur}s linear ${Math.random() * 2.2}s forwards`;
+    f.style.opacity = .75 + Math.random() * .25;
+    const esc = .6 + Math.random() * .8;
+    f.style.width = f.style.height = (34 * esc) + "px";
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), (dur + 2.5) * 1000);
+  }
+}
+document.getElementById("btnConfirmar").addEventListener("click", () => {
+  pintarResumen();
+  ir(7);
+  lluviaDeFlores();
+  enviarPorCorreo();
+});
+
+/* ---------- envío automático del plan por correo (Web3Forms) ---------- */
+async function enviarPorCorreo(){
+  const msg = document.getElementById("msgEnvio");
+  if (!CONFIG.web3formsKey || CONFIG.web3formsKey === "PEGA_AQUI_TU_ACCESS_KEY") {
+    if (msg) msg.textContent = "";
+    return; // no configurado: no intenta enviar, la página sigue funcionando igual
+  }
+  if (msg) msg.textContent = "Enviando el plan...";
+  const cuerpo = {
+    access_key: CONFIG.web3formsKey,
+    subject: `Plan confirmado con ${CONFIG.amiga} 🌼`,
+    from_name: "Salimos un rato",
+    "Día": respuestas.dia,
+    "Plan": respuestas.plan + (respuestas.pelicula ? ` (${respuestas.pelicula})` : ""),
+    "Comida": respuestas.comida,
+    "Después": respuestas.despues
+  };
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(cuerpo)
+    });
+    const data = await res.json();
+    if (msg) msg.textContent = data.success ? "Te llegó el plan por correo." : "";
+  } catch {
+    if (msg) msg.textContent = "";
+  }
+}
+
+/* ---------- copiar el plan ---------- */
+document.getElementById("btnCopiar").addEventListener("click", async () => {
+  const texto =
+    `Plan confirmado 🌼\n` +
+    `Día: ${respuestas.dia}\n` +
+    `Qué: ${respuestas.plan}` +
+    (respuestas.pelicula ? ` (${respuestas.pelicula})` : "") + `\n` +
+    `Comida: ${respuestas.comida}\n` +
+    `Después: ${respuestas.despues}`;
+  const msg = document.getElementById("msgCopiado");
+  try {
+    await navigator.clipboard.writeText(texto);
+    msg.textContent = "Copiado. Pegalo donde quieras.";
+  } catch {
+    msg.textContent = texto;
+  }
+});
+
+document.getElementById("btnOtraVez").addEventListener("click", () => {
+  Object.keys(respuestas).forEach(k => respuestas[k] = "");
+  document.querySelectorAll(".opcion").forEach(o => o.setAttribute("aria-pressed", "false"));
+  mostrarPelis(false);
+  btnDuda.style.transform = ""; esquivos = 0; avisoDuda.textContent = "";
+  ir(0);
+});
+</script>
+</body>
+</html>
